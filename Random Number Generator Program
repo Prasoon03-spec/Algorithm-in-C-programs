@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 100
+#define MIN 1
+
+int main()
+{
+    int n;
+
+    printf("\nEnter the number of the elements you want to generate as an array of elements: ");
+    scanf("%d", &n);
+
+    int arr[n];
+
+    printf("\nThe random array elements are : ");
+    for(int i=0; i<n; i++)
+    {
+        arr[i] = rand() % (MAX - MIN + 1) + MIN;
+        printf("%d\t", arr[i]);
+    }
+
+    printf("\n");
+    return 0;
+}
