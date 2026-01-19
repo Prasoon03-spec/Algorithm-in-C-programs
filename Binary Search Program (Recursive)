@@ -1,0 +1,74 @@
+
+#include <stdio.h>
+
+ void binary_search(int arr[], int low, int high, int key, int n)
+ {
+    if(low > high)
+    {
+        printf("\nThe element %d is not present within the inputed array\n", key);
+        return;
+    }
+
+    int mid = (low + high)/2;
+
+    if(key == arr[mid])
+    {
+        printf("\nThe element %d is at %d position within the inputed array\n", key, mid + 1);
+
+        int i = mid - 1;
+
+        while(i >= 0 && arr[i] == key)
+        {
+            printf("The element %d is at %d position within the inputed array\n", key, i+1);
+            i--;
+        }
+
+        i = mid + 1;
+
+        while(i < n && arr[i] == key)
+        {
+            printf("The element %d is at %d position within the inputed  array\n",key, i+1);
+            i++;
+        }
+
+        return;
+    }
+
+    else if(key < arr[mid])
+    {
+        binary_search(arr, low, mid - 1, key, n);
+    }
+
+    else
+    {
+        binary_search(arr, mid + 1, high, key, n);
+    }
+}
+
+int main()
+{
+    int n, key;
+
+    printf("\nEnter the size of the array elements: ");
+    scanf("%d", &n);
+
+    int arr[n];
+
+    printf("\nEnter the elements in the array: ");
+    for(int i=0; i<n; i++)
+    {
+        scanf("%d", &arr[i]);
+    }
+
+    printf("\nThe inputed elements in the array are: ");
+    for(int i=0; i<n; i++)
+    {
+        printf("%d\t", arr[i]);
+    }
+
+    printf("\n\nEnter the element which is to be searched in the inputed array: ");
+    scanf("%d", &key);
+
+    binary_search(arr, 0, n - 1, key, n);
+    return 0;
+}
