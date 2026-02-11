@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 100000
+#define MIN 1
+
+void selectionSort(int arr[], int n)
+{
+    for(int i=0; i<n-1; i++)
+    {
+        int min = i;
+        for(int j=i+1; j<n; j++)
+        {
+            if(arr[min] > arr[j])
+            {
+                min = j;
+            }
+        }
+
+        int temp = arr[i];
+        arr[i] = arr[min];
+        arr[min] = temp;
+    }
+}
+
+void copyArray(int src[], int dest[], int n)
+{
+    for(int i=0; i<n ; i++)
+    {
+        dest[i] = src[i];
+    }
+}
+
+void reverseCopyArray(int src[], int dest[], int n)
+{
+    for(int i=0; i<n ; i++)
+    {
+        dest[i] = src[n-i-1];
+    }
+}
+
+int main()
+{
+    clock_t start, end;
+    double cpu_time_1, cpu_time_2, cpu_time_3;
+    int n;
+
+    printf("\nEnter the size of the array elements: ");
+    scanf("%d", &n);
+
+    int original[n];
+    int avg[n], best[n], worst[n];
+
+    srand(time(NULL));
+
+    printf("\nThe randomly generated array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        original[i] = rand()%(MAX - MIN + 1) + MIN;
+        printf("%d\t", original[i]);
+    }
+
+    copyArray(original, avg, n);
+    start = clock();
+    selectionSort(avg, n);
+    end = clock();
+    cpu_time_1 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    copyArray(avg, best, n);
+    printf("\n\nThe sorted array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        printf("%d\t", best[i]);
+    }
+    start = clock();
+    selectionSort(best, n);
+    end = clock();
+    cpu_time_2 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    reverseCopyArray(best, worst, n);
+    printf("\n\nThe reverse sorted array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        printf("%d\t", worst[i]);
+    }
+    start = clock();
+    selectionSort(worst, n);
+    end = clock();
+    cpu_time_3 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    printf("\n\nThe cpu execution time in AVERAGE CASE is: %.8f\n\n", cpu_time_1);
+    printf("\nThe cpu execution time in BEST CASE is: %.8f\n\n", cpu_time_2);
+    printf("\nThe cpu execution time in WORST CASE is: %.8f\n\n", cpu_time_3);
+
+    printf("\n");
+    return 0;
+}
