@@ -1,0 +1,147 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 1000
+#define MIN 1
+
+void merge(int arr[], int low, int mid, int high)
+{
+    int n1= mid - low + 1;
+    int n2= high - mid;
+
+    int i, j, k;
+
+    int left[n1], right[n2];
+
+    for(i=0; i<n1; i++)
+    {
+        left[i] = arr[low + i];
+    }
+
+    for(j=0; j<n2; j++)
+    {
+        right[j] = arr[mid + 1 + j];
+    }
+
+    i=0;
+    j=0;
+    k=low;
+
+    while(i<n1 && j<n2)
+    {
+        if(left[i] <= right[j])
+        {
+            arr[k] = left[i];
+            i++;
+        }
+
+        else
+        {
+            arr[k] = right[j];
+            j++;
+        }
+
+        k++;
+    }
+
+    while(i<n1)
+    {
+        arr[k] = left[i];
+        i++;
+        k++;
+    }
+
+    while(j<n2)
+    {
+        arr[k] = right[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int arr[], int low, int high)
+{
+    if(low < high)
+    {
+        int mid = (low + high)/2;
+
+        mergeSort(arr, low, mid);
+        mergeSort(arr, mid+1, high);
+
+        merge(arr, low, mid, high);
+    }
+}
+
+void copyArrayElements(int src[], int dest[], int n)
+{
+    for(int i=0; i<n; i++)
+    {
+        dest[i] = src[i];
+    }
+}
+
+void reverseCopyArrayElements(int src[], int dest[], int n)
+{
+    for(int i=0; i<n; i++)
+    {
+        dest[i] = src[n-i-1];
+    }
+}
+
+int main()
+{
+    int n;
+    clock_t start, end;
+    double cpu_time_1, cpu_time_2, cpu_time_3;
+
+    printf("\nEnter the total number of array elements you want to generate: ");
+    scanf("%d", &n);
+
+    int avg[n], best[n], worst[n];
+    int original[n];
+
+    srand(time(NULL));
+
+    printf("\nThe randomly generated array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        original[i] = rand()%(MAX - MIN + 1) + MIN;
+        printf("%d\t", original[i]);
+    }
+
+    copyArrayElements(original, avg, n);
+    start = clock();
+    mergeSort(avg, 0, n-1);
+    printf("\n\nThe sorted array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        printf("%d\t", avg[i]);
+    }
+    end = clock();
+    cpu_time_1 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    copyArrayElements(avg, best, n);
+    start = clock();
+    mergeSort(best, 0, n-1);
+    end = clock();
+    cpu_time_2 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    reverseCopyArrayElements(best, worst, n);
+    printf("\n\nThe reverse sorted array elements are: ");
+    for(int i=0; i<n; i++)
+    {
+        printf("%d\t", worst[i]);
+    }
+    start = clock();
+    mergeSort(worst, 0, n-1);
+    end = clock();
+    cpu_time_3 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    printf("\n\nThe time taken by the CPU to execute the code in average case is: %.8f", cpu_time_1);
+    printf("\nThe time taken by the CPU to execute the code in best case is: %.8f", cpu_time_2);
+    printf("\nThe time taken by the CPU to execute the code in worst case is: %.8f", cpu_time_3);
+
+    printf("\n");
+    return 0;
+}
