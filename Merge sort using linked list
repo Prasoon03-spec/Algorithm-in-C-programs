@@ -1,0 +1,212 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 100000
+#define MIN 1
+
+struct node
+{
+    int data;
+    struct node* next;
+};
+
+struct node* head = NULL;
+
+void insertAtEnd(struct node** head, int value)
+{
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+
+    if(newNode == NULL)
+    {
+        printf("\nMemory Overflow !!!");
+        exit(0);
+    }
+
+    newNode -> data = value;
+    newNode -> next = NULL;
+
+    if(*head == NULL)
+    {
+        *head = newNode;
+        return;
+    }
+
+    struct node* temp = *head;
+
+    while(temp -> next != NULL)
+    {
+        temp = temp -> next;
+    }
+    temp -> next = newNode;
+}
+
+struct node* mergeSort(struct node* a, struct node* b)
+{
+    if(a == NULL)
+    {
+        return b;
+    }
+
+    if(b == NULL)
+    {
+        return a;
+    }
+
+    if(a -> data <= b -> data)
+    {
+        a -> next = mergeSort(a -> next, b);
+        return a;
+    }
+
+    else
+    {
+        b -> next = mergeSort(a, b -> next);
+        return b;
+    }
+}
+
+void splitList(struct node* src, struct node** front, struct node** back)
+{
+    struct node* slow = src;
+    struct node* fast = src -> next;
+
+    while(fast != NULL)
+    {
+        fast = fast -> next;
+        if(fast != NULL)
+        {
+            slow = slow -> next;
+            fast = fast -> next;
+        }
+    }
+
+    *front = src;
+    *back = slow -> next;
+    slow -> next = NULL;
+}
+
+void merge(struct node** headRef)
+{
+    if(*headRef == NULL || (*headRef) -> next == NULL)
+    {
+        return;
+    }
+
+    struct node *a, *b;
+
+    splitList(*headRef, &a, &b);
+    merge(&a);
+    merge(&b);
+
+    *headRef = mergeSort(a, b);
+}
+
+void freeList(struct node** head)
+{
+    struct node* temp;
+    while(*head != NULL)
+    {
+        temp = *head;
+        *head = (*head) -> next;
+        free(temp);
+    }
+}
+
+void copyArrayElements(int src[], int dest[], int n)
+{
+    for(int i=0; i<n; i++)
+    {
+        dest[i] = src[i];
+    }
+}
+
+void reverseCopyArrayElements(int src[], int dest[], int n)
+{
+    for(int i=0; i<n; i++)
+    {
+        dest[i] = src[n-i-1];
+    }
+}
+
+void printList(struct node* head)
+{
+    while(head != NULL)
+    {
+        printf("%d -> ", head -> data);
+        head = head -> next;
+    }
+
+    printf("NULL\n");
+}
+
+int main()
+{
+    int n;
+    clock_t start, end;
+    double cpu_time_1, cpu_time_2, cpu_time_3;
+
+    printf("\nEnter the size of the list to be generated: ");
+    scanf("%d", &n);
+
+    srand(time(NULL));
+
+    int src[n], dest[n];
+    struct node* avg = NULL;
+    struct node* best = NULL;
+    struct node* worst = NULL;
+
+    for(int i=0; i<n; i++)
+    {
+        src[i] = rand()%(MAX - MIN + 1) + MIN;
+    }
+
+    copyArrayElements(src, dest, n);
+    for(int i=0; i<n; i++)
+    {
+        insertAtEnd(&avg, dest[i]);
+    }
+    printf("\nThe original generated random list is: ");
+    printList(avg);
+
+    start = clock();
+    merge(&avg);
+    end = clock();
+
+    cpu_time_1 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    copyArrayElements(src, dest, n);
+    for(int i=0; i<n; i++)
+    {
+        insertAtEnd(&best, dest[i]);
+    }
+
+    start = clock();
+    merge(&best);
+    end = clock();
+
+    printf("\nThe sorted array elements are: ");
+    printList(best);
+
+    cpu_time_2 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    reverseCopyArrayElements(src, dest, n);
+    for(int i=0; i<n; i++)
+    {
+        insertAtEnd(&worst, dest[i]);
+    }
+    printf("\nThe reverse of the sorted array elements are: ");
+    printList(worst);
+
+    start = clock();
+    merge(&worst);
+    end = clock();
+
+    cpu_time_3 = (double)(end - start)/CLOCKS_PER_SEC;
+
+    printf("\nThe time taken to sort the elements in the average case is: %.8f", cpu_time_1);
+    printf("\nThe time taken to sort the elements in the best case is: %.8f", cpu_time_2);
+    printf("\nThe time taken to sort the elements in the worst case is: %.8f\n\n", cpu_time_3);
+
+    return 0;
+}
