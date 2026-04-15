@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 10000
+#define MIN 1
+
+void swap(int *a, int *b)
+{
+    int temp= *a;
+    *a= *b;
+    *b= temp;
+}
+
+int partition(int arr[], int low, int high, int show, long long *comp)
+{
+    int pivot= arr[low];
+    int start= low + 1;
+    int end= high;
+    long long int comparisons= 0;
+
+    if(show)
+    {
+        printf("\n\nPartition -> Pivot: %d (%d to %d)", pivot, low, high);
+    }
+
+    while(start < end)
+    {
+        while(start <= high && arr[start] <= pivot)
+        {
+            (*comp)++;
+            start++;
+        }
+
+        while(end > low && arr[end] > pivot)
+        {
+            (*comp)++;
+            end--;
+        }
+
+        if(start < end)
+        {
+            swap(&arr[start], &arr[end]);
+        }
+    }
+
+    swap(&arr[low], &arr[end]);
+    return end;
+}
+
+long long int quickSort(int arr[], int low, int high, int show)
+{
+    long long int comparisons= 0;
+
+    if(low < high)
+    {
+        int loc= partition(arr, low, high, show, &comparisons);
+
+        comparisons+= quickSort(arr, low, loc-1, show);
+        comparisons+= quickSort(arr, loc+1, high, show);
+    }
+
+    return comparisons;
+}
+
+void copyArrayElements(int src[], int dest[], int n)
+{
+    for(int i= 0; i< n; i++)
+    {
+        dest[i]= src[i];
+    }
+}
+
+void reverseCopyArrayElements(int src[], int dest[], int n)
+{
+    for(int i= 0; i< n; i++)
+    {
+        dest[i]= src[n-i-1];
+    }
+}
+
+int main()
+{
+    int n;
+    clock_t Start, End;
+    double cpu_time_avg_case, cpu_time_best_case, cpu_time_worst_case;
+    long long int comp_avg_case, comp_best_case, comp_worst_case;
+
+    printf("\nEnter the size of the array elements to be generated: ");
+    scanf("%d", &n);
+
+    int arr[n];
+    int avg[n], best[n], worst[n];
+
+    srand(time(NULL));
+
+    for(int i= 0; i< n; i++)
+    {
+        arr[i]= rand()%(MAX - MIN + 1) + MIN;
+    }
+
+    printf("\n\nThe randomly generated array elements are: ");
+    for(int i= 0; i< n; i++)
+    {
+        printf("%d\t", arr[i]);
+    }
+
+    copyArrayElements(arr, avg, n);
+    Start= clock();
+    comp_avg_case= quickSort(avg, 0, n-1, 1);
+    End= clock();
+
+    cpu_time_avg_case= (double)(End - Start) / CLOCKS_PER_SEC;
+
+    copyArrayElements(avg, best, n);
+    printf("\n\nThe sorted array elements are: ");
+    for(int i= 0; i< n; i++)
+    {
+        printf("%d\t", best[i]);
+    }
+    Start= clock();
+    comp_best_case= quickSort(best, 0, n-1, 0);
+    End= clock();
+
+    cpu_time_best_case= (double)(End - Start) / CLOCKS_PER_SEC;
+
+    reverseCopyArrayElements(best, worst, n);
+    printf("\n\nThe reversed array elements are: ");
+    for(int i= 0; i< n; i++)
+    {
+        printf("%d\t", worst[i]);
+    }
+    Start= clock();
+    comp_worst_case= quickSort(worst, 0, n-1, 0);
+    End= clock();
+
+    cpu_time_worst_case= (double)(End - Start) / CLOCKS_PER_SEC;
+
+    printf("\n\n----------The required CPU execution time and comparisons required for all the three cases are:- ----------\n\n");
+
+    printf("The CPU execution time in AVERAGE CASE is: %.10f\n", cpu_time_avg_case);
+    printf("The total number of comparisons done in AVERAGE CASE is: %lld\n", comp_avg_case);
+
+    printf("\nThe CPU execution time in BEST CASE is: %.10f\n", cpu_time_best_case);
+    printf("The total number of comparisons done in BEST CASE is: %lld\n", comp_best_case);
+
+    printf("\nThe CPU execution time in WORST CASE is: %.10f\n", cpu_time_worst_case);
+    printf("The total number of comparisons done in WORST CASE is: %lld\n", comp_worst_case);
+
+    return 0;
+}
